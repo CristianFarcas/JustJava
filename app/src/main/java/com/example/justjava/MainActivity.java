@@ -1,6 +1,9 @@
 package com.example.justjava;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -30,7 +33,17 @@ public class MainActivity extends AppCompatActivity {
         String orderSummary;
 
         orderSummary = createOrderSummary();
-        displayMessage(orderSummary);
+        composeEmail(getString(R.string.email_subject), orderSummary);
+    }
+
+    public void composeEmail(String subject, String body) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     /**
@@ -78,17 +91,14 @@ public class MainActivity extends AppCompatActivity {
         boolean hasWhippedCream = ((CheckBox) findViewById(R.id.whipped_cream_checkbox)).isChecked();
         boolean hasChocolate = ((CheckBox) findViewById(R.id.chocolate_checkbox)).isChecked();
 
-        return "Name: " +
-                ((EditText) findViewById(R.id.name_field)).getText().toString() +
-                "\nQuantity: " +
-                this.numberOfCoffees +
-                "\nTotal: " +
-                NumberFormat.getCurrencyInstance().format(calculatePrice(hasWhippedCream, hasChocolate)) +
-                "\nHas whipped cream: " +
-                hasWhippedCream +
-                "\nHas chocolate: " +
-                hasChocolate +
-                "\nThank you!";
+        return getString(R.string.order_summary_name,
+                ((EditText) findViewById(R.id.name_field)).getText().toString()) + "\n" +
+                getString(R.string.order_summary_quantity, this.numberOfCoffees) + "\n" +
+                getString(R.string.order_summary_price,
+                NumberFormat.getCurrencyInstance().format(calculatePrice(hasWhippedCream, hasChocolate))) + "\n" +
+                getString(R.string.order_summary_has_topping_1, hasWhippedCream)+ "\n" +
+                getString(R.string.order_summary_has_topping_2, hasChocolate) + "\n" +
+                getString(R.string.order_thank_you);
     }
 
     /**
@@ -104,13 +114,5 @@ public class MainActivity extends AppCompatActivity {
         totalPrice = totalPrice * this.numberOfCoffees;
 
         return totalPrice;
-    }
-
-    /**
-     * This method displays the given text on the screen.
-     */
-    private void displayMessage(String message) {
-        TextView priceTextView = findViewById(R.id.price_text_view);
-        priceTextView.setText(message);
     }
 }
