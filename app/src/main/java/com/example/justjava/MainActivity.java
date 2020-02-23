@@ -18,7 +18,7 @@ import java.text.NumberFormat;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private int numberOfCoffees = 0;
+    private int numberOfCoffees = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
